@@ -1,0 +1,466 @@
+<!--DOCTY
+PE html-->
+<html lang="pl">
+<head>
+<meta charset="utf-8"/>
+<title>Chivasiarnia</title>
+<style>
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: -1;
+}
+body.light {
+  background-color: #ffffff;
+  color: #000;
+}
+
+body.light .question {
+  background-color: rgba(255, 255, 255, 0.3); /* przezroczyste tło */
+  backdrop-filter: blur(5px);               /* rozmycie tła */
+  box-shadow: 0 0 20px #00aa88;
+  border: 1px solid rgba(255, 255, 255, 0.4); /* subtelna ramka */
+}
+
+
+body.light #volumeControl {
+  background-color: #fff;
+  box-shadow: 0 0 10px #00aa88;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-image: url("tlo.jpg"); /* ← nazwa pliku z tłem */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  color: #00ff88;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  overflow: hidden;
+}
+
+    #introScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 1000;
+    }
+    .intro-text {
+      font-size: 48px;
+      font-weight: bold;
+      opacity: 0;
+      animation: fadeIn 2s ease forwards;
+    }
+    @keyframes fadeIn {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+.question.active {
+  display: block;
+}
+
+.question p {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.question label {
+  display: block;
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+    input[type="text"] {
+      width: 80%;
+      padding: 8px;
+      font-size: 16px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+  background-color: #00ff88;
+  border: none;
+  color: #000;
+  padding: 12px 30px;
+  font-size: 18px;
+  margin-top: 30px;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+button:hover {
+  background-color: #00cc66;
+  transform: scale(1.05);
+}
+
+    .result {
+      font-size: 24px;
+      font-weight: bold;
+      margin-top: 30px;
+    }
+
+    #volumeControl {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  z-index: 9999;
+  background-color: #0a0a0a;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px #00ff88;
+}
+
+#volumeControl input[type="range"] {
+  width: 100px;
+}
+
+h1 {
+  font-size: 48px;
+  margin-top: 50px;
+  text-shadow: 0 0 4px #00ff88;
+  color: #66ffcc;
+}
+
+.question {
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.4s ease-in-out;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 30px;
+  border-radius: 16px;
+  max-width: 600px;
+  margin: 150px auto;
+  box-shadow: 0 0 20px #00ff88;
+}
+
+
+.question.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+#modeToggle {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background: #00ff88;
+  color: #000;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  z-index: 9999;
+}
+
+  </style>
+</head>
+<body>
+<div id="introScreen">
+<div class="intro-text" id="introText"></div>
+</div>
+<audio autoplay="" loop="">
+<source src="chivas.mp3" type="audio/mpeg"/>
+</audio>
+<div id="volumeControl">
+<label for="volume">🔊</label>
+<input id="volume" max="1" min="0" step="0.01" type="range" value="1"/>
+</div>
+<button id="modeToggle">🌙 Tryb Jasny</button>
+<h1>Quiz o Chivasie</h1>
+<form id="quizForm">
+<!-- wszystkie pytania z oryginalnego pliku -->
+<div class="question active">
+<p>Jak nazywa się Chivas?</p>
+<label><input name="q1" type="radio" value="0"/> Krystian Chmielewski</label><br/>
+<label><input name="q1" type="radio" value="1"/> Krystian Gierakowski</label><br/>
+<label><input name="q1" type="radio" value="0"/> Kamil Gierakowski</label><br/>
+<label><input name="q1" type="radio" value="0"/> Krzysztof Gierakowski</label><br/>
+<button class="nextBtn" type="button">Dalej</button></div>
+<div class="question">
+<p>Ile albumów wydał?</p>
+<label><input name="q2" type="radio" value="1"/> 3</label><br/>
+<label><input name="q2" type="radio" value="0"/> 2</label><br/>
+<label><input name="q2" type="radio" value="0"/> 5</label><br/>
+<label><input name="q2" type="radio" value="0"/> 4</label><br/>
+<button class="nextBtn" type="button">Dalej</button></div>
+<div class="question">
+<p>Z którego miasta wywodzi się Chivas?</p>
+<label><input name="q3" type="radio" value="1"/> Łódź</label><br/>
+<label><input name="q3" type="radio" value="0"/> Kraków</label><br/>
+<label><input name="q3" type="radio" value="0"/> Warszawa</label><br/>
+<label><input name="q3" type="radio" value="0"/> Gdańsk</label><br/>
+<button class="nextBtn" type="button">Dalej</button></div>
+<div class="question">
+<p>Czy Chivas wydał więcej płyt niż 3?</p>
+<label><input name="q4" type="radio" value="0"/> Tak</label><br/>
+<label><input name="q4" type="radio" value="1"/> Nie</label><br/>
+<button class="nextBtn" type="button">Dalej</button></div>
+<div class="question">
+<p>Czy Chivas wystąpił gościnnie w jakiejś stacji radiowej?</p>
+<label><input name="q5" type="radio" value="1"/> Tak</label><br/>
+<label><input name="q5" type="radio" value="0"/> Nie</label><br/>
+<button class="nextBtn" type="button">Dalej</button></div>
+<div class="question">
+<p>Jakie auto najczęściej widzimy w klipach Chivasa</p>
+<label><input name="q6" type="radio" value="1"/>Dodge Challenger</label><br/>
+<label><input name="q6" type="radio" value="0"/>Dodge Hellcat </label><br/>
+<label><input name="q6" type="radio" value="0"/>Mclarren</label><br/>
+<label><input name="q6" type="radio" value="0"/>Mercedes</label><br/>
+<button class="nextBtn" type="button">Dalej</button></div>
+<div class="question">
+<p>W którym roku Chivas wydał album "Nauczyłem się przeklinać"</p>
+<label><input name="q7" type="radio" value="0"/>21 maja 2020</label><br/>
+<label><input name="q7" type="radio" value="0"/>21 maja 2019 </label><br/>
+<label><input name="q7" type="radio" value="1"/>21 maja 2021</label><br/>
+<label><input name="q7" type="radio" value="0"/>21 maja 2022</label><br/>
+<button class="nextBtn" type="button">Dalej</button></div>
+<div class="question">
+<p>Ile posiadamy utworów w albumie "Deathcore"?</p>
+<label><input name="q8" type="radio" value="0"/>9</label><br/>
+<label><input name="q8" type="radio" value="1"/>10</label><br/>
+<label><input name="q8" type="radio" value="0"/>8</label><br/>
+<label><input name="q8" type="radio" value="0"/>11</label><br/>
+<button class="nextBtn" type="button">Dalej</button></div>
+<div class="question">
+<p>Czy Chivas był w SBM Label?</p>
+<label><input name="q9" type="radio" value="0"/> Tak</label><br/>
+<label><input name="q9" type="radio" value="1"/> Nie</label><br/>
+<button class="nextBtn" type="button">Dalej</button></div>
+<div class="question">
+<p>Za który album chivas otrzymał platynowa płyte</p>
+<label><input name="q10" type="radio" value="0"/>Lato 2024</label><br/>
+<label><input name="q10" type="radio" value="0"/>Deathcore</label><br/>
+<label><input name="q10" type="radio" value="0"/>Młody say10</label><br/>
+<label><input name="q10" type="radio" value="1"/>Nauczyłem się przeklinać</label><br/>
+<button class="nextBtn" type="button">Dalej</button></div>
+<div class="question">
+<p>"Pierdolimy twoją forsę Jak będzie dobry moment to ją, kurwa, zrobię...?"</p>
+<label><input name="q11" type="radio" value="0"/>Chivas, bratek dla Was i dla pań</label><br/>
+<label><input name="q11" type="radio" value="0"/>Chivas, bratek dla Was i dla pań</label><br/>
+<label><input name="q11" type="radio" value="0"/>Chivasko bratan dla Was i dla pań</label><br/>
+<label><input name="q11" type="radio" value="1"/>Chivas, bratan dla Was i dla pań</label><br/>
+<button class="nextBtn" type="button">Dalej</button></div>
+<div class="question">
+<p>Co robił chivas przed zostaniem wykonawca</p>
+<label><input name="q12" type="radio" value="0"/> Pracował w gastronomii</label><br/>
+<label><input name="q12" type="radio" value="1"/> Był producentem muzycznym</label><br/>
+<label><input name="q12" type="radio" value="0"/> Był Influencerem</label><br/>
+<label><input name="q12" type="radio" value="0"/> Pracował W hotelu</label><br/>
+<button class="nextBtn" type="button">Dalej</button>
+</div>
+<div class="question">
+<p>Czy Chivas ma jakieś zwierzęta?</p>
+<label><input name="q13" type="radio" value="1"/> TAK</label><br/>
+<label><input name="q13" type="radio" value="0"/> NIE</label><br/>
+<button class="nextBtn" type="button">Dalej</button>
+</div>
+<div class="question">
+<p>Na jakim instrumencie gra chivas</p>
+<label><input name="q14" type="radio" value="0"/> Pianino</label><br/>
+<label><input name="q14" type="radio" value="0"/> Perkusja</label><br/>
+<label><input name="q14" type="radio" value="1"/> Gitara</label><br/>
+<label><input name="q14" type="radio" value="0"/> Flet</label><br/>
+<button class="nextBtn" type="button">Dalej</button>
+</div>
+<div class="question">
+<p>Na kogo muzyce wzorował się chivas</p>
+<label><input name="q15" type="radio" value="0"/> Eminem</label><br/>
+<label><input name="q15" type="radio" value="0"/> White2115</label><br/>
+<label><input name="q15" type="radio" value="0"/> Blacha</label><br/>
+<label><input name="q15" type="radio" value="1"/> Travis Scott</label><br/>
+<button class="nextBtn" type="button">Dalej</button>
+</div>
+<div class="question">
+<p>Co oznacza skrót 042</p>
+<label><input name="q16" type="radio" value="0"/> Numer kieurnkowy do Warszawy</label><br/>
+<label><input name="q16" type="radio" value="0"/> Numer kieurnkowy do Katowic</label><br/>
+<label><input name="q16" type="radio" value="0"/> Numer kieurnkowy do Krakowa</label><br/>
+<label><input name="q16" type="radio" value="1"/> Numer kierunkowy do Łodzi</label><br/>
+<button class="nextBtn" type="button">Dalej</button>
+</div>
+<div class="question">
+<p>Pierwsza wytwórnia Chivasa</p>
+<label><input name="q17" type="radio" value="0"/> GUGU</label><br/>
+<label><input name="q17" type="radio" value="0"/> Globalheartz</label><br/>
+<label><input name="q17" type="radio" value="1"/> New Bad Label</label><br/>
+<label><input name="q17" type="radio" value="0"/> SBM</label><br/>
+<button class="nextBtn" type="button">Dalej</button>
+</div>
+<div class="question">
+<p>Ile miast odwiedził chivas podczas trasy z epki</p>
+<label><input name="q18" type="radio" value="0"/> 2</label><br/>
+<label><input name="q18" type="radio" value="1"/> 3</label><br/>
+<label><input name="q18" type="radio" value="0"/> 5</label><br/>
+<label><input name="q18" type="radio" value="0"/> 4</label><br/>
+<button class="nextBtn" type="button">Dalej</button>
+</div>
+<div class="question">
+<p>Kogo fryzura w dzieciństwie podobała sie chivasowi</p>
+<label><input name="q19" type="radio" value="0"/> Ron Weasley</label><br/>
+<label><input name="q19" type="radio" value="1"/> Draco Malfoy</label><br/>
+<label><input name="q19" type="radio" value="0"/> Severus Snape</label><br/>
+<label><input name="q19" type="radio" value="0"/> Harry Potter</label><br/>
+<button class="nextBtn" type="button">Dalej</button>
+</div>
+<div class="question">
+<p>Czy utwór "palenie zabija" zdobył zlotą płyte?</p>
+<label><input name="q20" type="radio" value="1"/> Tak</label><br/>
+<label><input name="q20" type="radio" value="0"/> Nie</label><br/>
+<button class="nextBtn" type="button">Dalej</button>
+</div>
+<div class="question">
+<p>Czy utwór "Death note" ma ponad 4 mln wyświetleń na youtubie?</p>
+<label><input name="q21" type="radio" value="1"/> Tak</label><br/>
+<label><input name="q21" type="radio" value="0"/> Nie</label><br/>
+<button class="nextBtn" type="button">Dalej</button>
+</div>
+<div class="question">
+<p>Czy kanał chivasa na youtubie ma ponad 100 tysięcy subskrypcji</p>
+<label><input name="q22" type="radio" value="0"/> Tak</label><br/>
+<label><input name="q22" type="radio" value="1"/> Nie</label><br/>
+<button class="nextBtn" type="button">Dalej</button>
+</div>
+</form>
+<div class="result" id="result" style="display:none; padding: 20px; max-width: 800px; margin: 0 auto; text-align: left;"><div id="answerSummary"></div></div>
+
+<script>
+const userAnswers = [];
+
+const audio = document.querySelector('audio');
+const volumeSlider = document.getElementById('volume');
+volumeSlider.addEventListener('input', () => {
+  audio.volume = volumeSlider.value;
+});
+const modeToggle = document.getElementById('modeToggle');
+let dark = true;
+
+modeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('light');
+  dark = !dark;
+  modeToggle.textContent = dark ? '🌙 Tryb Jasny' : '🌑 Tryb Ciemny';
+});
+
+document.addEventListener('click', () => {
+  audio.play().catch(() => {});
+}, { once: true });
+
+const introText = document.getElementById('introText');
+const introScreen = document.getElementById('introScreen');
+const introLines = ["CHIVASIARNIA", "PRZEDSTAWIA", "QUIZ"];
+let introIndex = 0;
+
+const form = document.getElementById('quizForm');
+const questions = form.querySelectorAll('.question');
+const totalQuestions = questions.length;
+let current = 0;
+let score = 0;
+
+function nextQuestion() {
+  const currentEl = questions[current];
+  const inputs = currentEl.querySelectorAll('input');
+  let odpowiedzUdzielona = false;
+  let userSelectedText = '';
+  let correctText = '';
+
+  if (inputs.length > 0) {
+    const checked = currentEl.querySelector('input[type="radio"]:checked');
+    if (!checked) {
+      alert("Zaznacz odpowiedź, zanim przejdziesz dalej!");
+      return;
+    } else {
+      odpowiedzUdzielona = true;
+      score += parseInt(checked.value);
+
+      userSelectedText = checked.parentElement.textContent.trim();
+      const options = currentEl.querySelectorAll('input[type="radio"]');
+      options.forEach(opt => {
+        if (opt.value === "1") {
+          correctText = opt.parentElement.textContent.trim();
+        }
+      });
+      const questionText = currentEl.querySelector("p").textContent.trim();
+      userAnswers.push({
+        question: questionText,
+        selected: userSelectedText,
+        correct: correctText,
+        isCorrect: checked.value === "1"
+      });
+    }
+  }
+
+  if (!odpowiedzUdzielona) {
+    alert("Udziel odpowiedzi, zanim przejdziesz dalej!");
+    return;
+  }
+
+  questions[current].classList.remove('active');
+  current++;
+
+  if (current < totalQuestions) {
+    questions[current].classList.add('active');
+  } else {
+    form.style.display = "none";
+    const maxScore = totalQuestions;
+    const resultBlock = document.getElementById('result');
+    const summary = document.getElementById('answerSummary');
+    resultBlock.style.display = 'block';
+    summary.innerHTML = `<h2>Zdobyłeś ${score} / ${maxScore} punktów!</h2>`;
+    userAnswers.forEach((ans, index) => {
+      const div = document.createElement('div');
+      div.style.padding = '10px';
+      div.style.marginBottom = '10px';
+      div.style.background = ans.isCorrect ? '#004d33' : '#330000';
+      div.style.borderRadius = '10px';
+      div.innerHTML = `
+        <strong>Pytanie ${index + 1}:</strong> ${ans.question}<br>
+        <span style="color:${ans.isCorrect ? '#00ff88' : '#ff6666'}">Twoja odpowiedź: ${ans.selected} ${ans.isCorrect ? '✔️' : '❌'}</span><br>
+        <span style="color:#cccccc">Poprawna odpowiedź: ${ans.correct}</span>
+      `;
+      summary.appendChild(div);
+    });
+  }
+}
+
+function showIntro() {
+  if (introIndex < introLines.length) {
+    introText.style.opacity = 0;
+    introText.textContent = introLines[introIndex];
+    introText.style.animation = 'none';
+    void introText.offsetWidth;
+    introText.style.animation = 'fadeIn 2s ease forwards';
+    introIndex++;
+    setTimeout(showIntro, 2500);
+  } else {
+    introScreen.style.display = 'none';
+    document.querySelector('h1').style.display = 'block';
+    document.getElementById('quizForm').style.display = 'block';
+    document.body.style.overflow = 'auto';
+    document.querySelectorAll('.nextBtn').forEach(btn => btn.addEventListener('click', nextQuestion));
+  }
+}
+
+window.onload = function() {
+  document.querySelector('h1').style.display = 'none';
+  document.getElementById('quizForm').style.display = 'none';
+  showIntro();
+};
+</script></body>
+</html>
