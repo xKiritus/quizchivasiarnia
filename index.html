@@ -257,8 +257,8 @@ h1 {
 <label><input name="q11" type="radio" value="0"/>Chivas, bratek dla Was i dla pań</label><br/>
 <label><input name="q11" type="radio" value="0"/>Chivasko bratan dla Was i dla pań</label><br/>
 <label><input name="q11" type="radio" value="1"/>Chivas, bratan dla Was i dla pań</label><br/>
-<button class="nextBtn" type="button">Dalej</button></div> 
-</div><div class="question">
+<button class="nextBtn" type="button">Dalej</button></div>
+<div class="question">
 <p>Co robił chivas przed zostaniem wykonawca</p>
 <label><input name="q12" type="radio" value="0"/> Pracował w gastronomii</label><br/>
 <label><input name="q12" type="radio" value="1"/> Był producentem muzycznym</label><br/>
@@ -339,8 +339,10 @@ h1 {
 <button class="nextBtn" type="button">Dalej</button>
 </div>
 </form>
-<div class="result" id="result"></div>
-<script>
+<div class="result" id="result" style="display:none; padding: 20px; max-width: 800px; margin: 0 auto; text-align: left;"><div id="answerSummary"></div></div>
+<script>const userAnswers = [];
+
+
   // cały skrypt bez zmian – działa z przyciskiem po intro
   const audio = document.querySelector('audio');
   const volumeSlider = document.getElementById('volume');
@@ -372,7 +374,74 @@ document.addEventListener('click', () => {
   let current = 0;
   let score = 0;
 
-  function nextQuestion() {
+  
+function nextQuestion() {
+  const currentEl = questions[current];
+  const inputs = currentEl.querySelectorAll('input');
+  let odpowiedzUdzielona = false;
+  let userSelectedText = '';
+  let correctText = '';
+
+  if (inputs.length > 0) {
+    const checked = currentEl.querySelector('input[type="radio"]:checked');
+    if (!checked) {
+      alert("Zaznacz odpowiedź, zanim przejdziesz dalej!");
+      return;
+    } else {
+      odpowiedzUdzielona = true;
+      score += parseInt(checked.value);
+
+      // Zapamiętaj odpowiedzi
+      userSelectedText = checked.parentElement.textContent.trim();
+      const options = currentEl.querySelectorAll('input[type="radio"]');
+      options.forEach(opt => {
+        if (opt.value === "1") {
+          correctText = opt.parentElement.textContent.trim();
+        }
+      });
+      const questionText = currentEl.querySelector("p").textContent.trim();
+      userAnswers.push({
+        question: questionText,
+        selected: userSelectedText,
+        correct: correctText,
+        isCorrect: checked.value === "1"
+      });
+    }
+  }
+
+  if (!odpowiedzUdzielona) {
+    alert("Udziel odpowiedzi, zanim przejdziesz dalej!");
+    return;
+  }
+
+  questions[current].classList.remove('active');
+  current++;
+
+  if (current < totalQuestions) {
+    questions[current].classList.add('active');
+  } else {
+    form.style.display = "none";
+    const maxScore = totalQuestions;
+    const resultBlock = document.getElementById('result');
+    const summary = document.getElementById('answerSummary');
+    resultBlock.style.display = 'block';
+    summary.innerHTML = `<h2>Zdobyłeś ${score} / ${maxScore} punktów!</h2>`;
+
+    userAnswers.forEach((ans, index) => {
+      const div = document.createElement('div');
+      div.style.padding = '10px';
+      div.style.marginBottom = '10px';
+      div.style.background = ans.isCorrect ? '#004d33' : '#330000';
+      div.style.borderRadius = '10px';
+      div.innerHTML = `
+        <strong>Pytanie ${index + 1}:</strong> ${ans.question}<br>
+        <span style="color:${ans.isCorrect ? '#00ff88' : '#ff6666'}">Twoja odpowiedź: ${ans.selected} ${ans.isCorrect ? '✔️' : '❌'}</span><br>
+        <span style="color:#cccccc">Poprawna odpowiedź: ${ans.correct}</span>
+      `;
+      summary.appendChild(div);
+    });
+  }
+}
   const currentEl = questions[current];
   const inputs = currentEl.querySelectorAll('input');
   let odpowiedzUdzielona = false;
@@ -435,6 +504,37 @@ document.addEventListener('click', () => {
     document.getElementById('quizForm').style.display = 'none';
     showIntro();
   };
+
+
+
+const introText = document.getElementById('introText');
+const introScreen = document.getElementById('introScreen');
+const introLines = ["CHIVASIARNIA", "PRZEDSTAWIA", "QUIZ"];
+let introIndex = 0;
+
+function showIntro() {
+  if (introIndex < introLines.length) {
+    introText.style.opacity = 0;
+    introText.textContent = introLines[introIndex];
+    introText.style.animation = 'none';
+    void introText.offsetWidth;
+    introText.style.animation = 'fadeIn 2s ease forwards';
+    introIndex++;
+    setTimeout(showIntro, 2500);
+  } else {
+    introScreen.style.display = 'none';
+    document.querySelector('h1').style.display = 'block';
+    document.getElementById('quizForm').style.display = 'block';
+    document.body.style.overflow = 'auto';
+    document.querySelectorAll('.nextBtn').forEach(btn => btn.addEventListener('click', nextQuestion));
+  }
+}
+
+window.onload = function() {
+  document.querySelector('h1').style.display = 'none';
+  document.getElementById('quizForm').style.display = 'none';
+  showIntro();
+};
 </script>
 </body>
 </html>
